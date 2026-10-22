@@ -1,5 +1,8 @@
 # Toka
 
+Toka is an open-source household task app by [Tucunar Labs](https://tucunar.com),
+a brand of Tucunar SpA.
+
 Tareas domésticas compartidas. Una casa, varias personas, plantillas de tarea que se
 regeneran solas cuando alguien las completa.
 
@@ -36,18 +39,20 @@ chocar con los de Finanzas (9099 / 8085), que nunca se tocan. Con un teléfono r
 
 ## Firebase real: checklist de consola
 
-Proyecto `toka-hogar-037f` (cuenta alonso@tucunar.com, organización Tucunar), Firestore en `southamerica-west1`, plan Spark.
-Ya hecho por API (cuenta `alonso@tucunar.com`): proyecto, Firebase agregado, base de datos Firestore, reglas
-publicadas (`scripts/publicar-reglas.sh`), app Android `com.toka.app` registrada con la huella SHA-1 de
-release `88:7E:EC:40:9C:3C:D5:A5:F0:CA:F6:48:09:F3:7A:BB:17:37:24:32`.
+El build oficial usa un proyecto Firebase de Tucunar Labs (Firestore en
+`southamerica-west1`, plan Spark). Para levantar el tuyo con la misma
+arquitectura:
 
-Falta un paso en la consola (inicializar Authentication por API exige facturación):
-
-- [ ] Firebase console → proyecto `toka-hogar-037f` → Authentication → "Comenzar" → proveedor **Google** → Habilitar
-      (con un correo de asistencia). Eso crea el cliente OAuth web que necesita el login.
-- [ ] Descargar la configuración con el cliente OAuth ya incluido y dejarla en `android/app/google-services.json`
-      (gitignoreado); para CI, en base64 como secret `GOOGLE_SERVICES_JSON_BASE64`.
-- [x] Reglas publicadas (repetir `scripts/publicar-reglas.sh` cada vez que cambie `firestore.rules`).
+- [ ] Firebase console → crear proyecto (o agregar Firebase a un proyecto de
+      Google Cloud) → Firestore Database → modo producción, región
+      `southamerica-west1`.
+- [ ] Authentication → "Comenzar" → proveedor **Google** → Habilitar (con un
+      correo de asistencia). Eso crea el cliente OAuth web que necesita el login.
+- [ ] Descargar `google-services.json` y dejarlo en
+      `android/app/google-services.json` (gitignoreado); para CI, en base64 como
+      secret `GOOGLE_SERVICES_JSON_BASE64`.
+- [ ] Publicar las reglas con `scripts/publicar-reglas.sh` cada vez que cambie
+      `firestore.rules`.
 
 ## Releases e instalación con Obtainium
 
@@ -56,7 +61,7 @@ lo publica como GitHub Release. [Obtainium](https://github.com/ImranR98/Obtainiu
 esos releases y actualiza la app sola.
 
 1. Instala Obtainium.
-2. "Add App" → pega `https://github.com/alonsoburon/toka`.
+2. "Add App" → pega `https://github.com/tucunar-labs/toka`.
 3. Obtainium detecta los releases y el asset `.apk` sin configuración extra.
 
 Para publicar una versión:
@@ -73,59 +78,35 @@ guardado en los secrets `ANDROID_KEYSTORE_BASE64`, `ANDROID_KEYSTORE_PASSWORD`,
 `ANDROID_KEY_ALIAS` y `ANDROID_KEY_PASSWORD`; además necesita `GOOGLE_SERVICES_JSON_BASE64`
 (el `google-services.json` real) y falla si falta.
 
-### Segundo canal: F-Droid privado "Nuxapower Apps"
+### Segundo canal: F-Droid
 
-El mismo APK firmado también se publica en el repo F-Droid privado (`~/code/nuxapower-apps`), igual que Finanzas:
+El mismo APK firmado también se puede publicar en un repo F-Droid propio:
 
 ```bash
 cd android && ./gradlew assembleRelease -PtokaVersionName=0.3.0 -PtokaVersionCode=300   # versión del tag, no la de desarrollo
-scripts/publicar-apk.sh                                                                    # sube al repo y verifica el índice
+scripts/publicar-apk.sh                                                                    # publica en el repo F-Droid configurado
 ```
 
 Los dos canales (Obtainium y F-Droid) deben servir **el mismo APK** (misma firma y mismo `versionCode`) para que
-se actualicen entre sí sin reinstalar. La metadata vive en `nuxapower-apps/metadata/com.toka.app.yml`.
+se actualicen entre sí sin reinstalar.
 
 **Guarda `android/release.jks` y `android/keystore.properties`** (están gitignoreados).
 Son la única forma de firmar actualizaciones que Android acepte como del mismo
 desarrollador; si se pierden, hay que desinstalar y reinstalar. El APK de release y el de
 debug tienen firmas distintas: para pasar de uno a otro hay que desinstalar.
 
-## Backend legado en producción (a retirar tras migrar)
+## Backend legado (opcional)
 
-Local: `make run-seed` (Go 1.26, SQLite en `toka.db`, sirve en :3000, lee `db/` desde la raíz del repo);
-`make smoke` lo prueba contra una base temporal. El seed es solo de desarrollo (hogar "Demo" con
-credenciales públicas).
+La app actual usa Firebase y no necesita servidor. El backend Go + SQLite queda
+en el repo como referencia y para migrar datos antiguos.
 
-Ya no es parte de la arquitectura vigente (la app usa Firebase), pero sigue sirviendo hasta que se migren los datos y se retire. Corre en el VPS OVH (Debian, Podman rootless + Quadlet, Caddy delante, Cloudflare):
+Local: `make run-seed` (Go 1.26, SQLite en `toka.db`, sirve en :3000, lee `db/`
+desde la raíz del repo); `make smoke` lo prueba contra una base temporal. El seed
+es solo de desarrollo (hogar "Demo" con credenciales públicas).
 
-- URL pública: `https://toka.nuxapower.cl` (Caddy → `127.0.0.1:3001`; el contenedor no
-  publica nada más). Sondeo: `GET /healthz`.
-- Quadlet en `~/.config/containers/systemd/`, fuentes en `~/apps/toka/`, imagen
-  `localhost/toka:latest` (ver `Containerfile`). La infraestructura común está descrita
-  en `~/code/AGENTS.md`.
-- La base es un solo archivo SQLite (`TOKA_DB`) en un volumen del contenedor.
-
-Deploy de una versión nueva (en el VPS):
-
-```bash
-cd ~/apps/toka && git pull --ff-only
-podman build -t localhost/toka:latest -f Containerfile .
-systemctl --user restart toka
-curl -s https://toka.nuxapower.cl/healthz
-```
-
-**No cargues el seed en producción.** Los hogares reales se crean desde la app.
-
-### Respaldo
-
-El volumen es de un uid remapeado del contenedor rootless, así que los scripts de `deploy/` se corren con
-`podman unshare` (y necesitan `sqlite3` en el host). `deploy/backup-toka.sh` hace una copia consistente con `sqlite3 .backup` (sin parar el
-servicio), verifica `PRAGMA integrity_check` y la sube a R2 con `deploy/upload-r2.sh` (`tucunar-backups/toka/<fecha>/`, retención 14 días); `deploy/restore-check.sh`
-restaura la última copia a un archivo temporal y compara conteos. Si el seed llegó a producción (token/invite
-públicos), `deploy/rotate-household-credentials.sh PERSON_ID HOUSEHOLD_ID` hace respaldo verificado, muestra una
-auditoría de quién hay en el hogar y rota el token y el invite; verifica que la base cambió antes de imprimirlos. Los units de systemd
-están en `deploy/`. Un respaldo sin restauración probada no cuenta: corre
-`restore-check.sh` después de instalar el timer.
+Si lo operás en un host propio, los scripts de `deploy/` (backup, restore-check,
+rotación de credenciales) siguen en el repo. **No cargues el seed en producción.**
+Los hogares reales se crean desde la app.
 
 ## Decisiones que vale la pena conocer
 
@@ -154,3 +135,9 @@ trabajan en este repositorio.
 Migración a Firestore hecha en la rama `firestore`: auth, hogar, tareas y recurrencia en el cliente,
 con reglas probadas en emulador. Falta completar el checklist de consola y migrar los datos del
 backend legado antes de retirarlo.
+
+## Licencia
+
+Apache License 2.0. Ver [`LICENSE`](LICENSE), [`NOTICE`](NOTICE) y
+[`TRADEMARK.md`](TRADEMARK.md). El código es abierto; la marca y las releases
+oficiales son de Tucunar SpA.

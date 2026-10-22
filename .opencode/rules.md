@@ -7,12 +7,12 @@
 - **Auth:** Firebase Auth con Google (Credential Manager).
 - **Datos:** Firestore con caché persistente offline; reglas en `firestore.rules`. Sin servidor propio.
 - **Legado (a retirar tras migrar):** backend Go + SQLite (`main.go`, `internal/`, `db/`, `deploy/`),
-  aún en producción en `https://toka.nuxapower.cl`. No se le añaden features.
+  en el repo hasta migrar los datos. No se le añaden features.
 
 ## Quick commands
 - `scripts/test-rules.sh` — prueba las reglas con un emulador propio (Auth 9199 / Firestore 8185).
 - `scripts/dev.sh` — emuladores + emulador Android + instala "Toka DEV" (`--parar` los detiene).
-- `scripts/publicar-reglas.sh` — publica reglas en `toka-hogar-037f` (solo si se pide).
+- `scripts/publicar-reglas.sh` — publica reglas en tu proyecto Firebase (solo si se pide).
 - `cd android && ./gradlew compileDebugKotlin` / `assembleDebug`.
 
 Nunca uses `pkill -f` ni toques los emuladores de Finanzas (9099 / 8085).

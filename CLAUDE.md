@@ -24,11 +24,11 @@ Ya **no** hay Retrofit, Room, KSP, kotlinx-serialization ni DataStore.
 ## Backend Go + SQLite (legado, a retirar tras migrar)
 
 `main.go`, `internal/`, `db/`, `Containerfile`, `deploy/`, `Makefile`, `.claude/scripts/smoke*.sh`
-siguen en el repo y en producción (`https://toka.nuxapower.cl`, VPS OVH con Podman + Quadlet)
-**hasta que se migren los datos y se retire**. No se le añaden features; solo se opera
-(deploy, respaldo, rotación de credenciales: ver `README.md` y `deploy/`). Las skills
-`/migration`, `/endpoint`, `/smoke` y el comando `/schema` describen ese backend y solo
-aplican a él. Para correrlo: `make run` / `make run-seed` (desde la raíz; lee `db/` del disco).
+siguen en el repo como backend legado **hasta que se migren los datos y se retire**. No se le
+añaden features; solo se opera (deploy, respaldo, rotación de credenciales: ver `README.md` y
+`deploy/`). Las skills `/migration`, `/endpoint`, `/smoke` y el comando `/schema` describen ese
+backend y solo aplican a él. Para correrlo: `make run` / `make run-seed` (desde la raíz; lee `db/`
+del disco).
 
 ## Comandos
 
@@ -37,7 +37,7 @@ scripts/test-rules.sh        # 54 comprobaciones de firestore.rules con emulador
 scripts/dev.sh               # emuladores Firebase + emulador Android + instala "Toka DEV"
 scripts/dev.sh --sin-compilar   # idem sin recompilar
 scripts/dev.sh --parar       # detiene los emuladores de Toka (por PID)
-scripts/publicar-reglas.sh   # publica firestore.rules en toka-hogar-037f
+scripts/publicar-reglas.sh   # publica firestore.rules en tu proyecto Firebase
 cd android && ./gradlew compileDebugKotlin   # verificación rápida de tipos
 cd android && ./gradlew assembleDebug        # APK debug
 ```
@@ -134,8 +134,8 @@ workers leen de la **caché de Firestore** vía `SessionCache`. Son notificacion
 - **Release:** `com.toka.app`; necesita `android/app/google-services.json` real (gitignoreado).
   En CI sale del secret `GOOGLE_SERVICES_JSON_BASE64` (`.github/workflows/release.yml`, falla si falta),
   además de los secrets del keystore.
-- **Proyecto Firebase:** `toka-hogar-037f` (cuenta alonso@tucunar.com, organización Tucunar), Firestore en
-  `southamerica-west1`, plan Spark. Checklist de consola pendiente en `README.md`.
+- **Proyecto Firebase:** el build oficial usa un proyecto de Tucunar Labs; Firestore en
+  `southamerica-west1`, plan Spark. Checklist de consola en `README.md`.
 
 ## Estructura (Android)
 

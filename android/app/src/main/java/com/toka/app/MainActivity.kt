@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: Apache-2.0
+// Copyright 2026 Tucunar SpA
+
 package com.toka.app
 
 import android.Manifest

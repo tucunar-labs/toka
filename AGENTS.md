@@ -5,7 +5,7 @@ App Android (Kotlin + Compose) de tareas domésticas compartidas que usa **Fireb
 reglas, sesión, recurrencia) vive en **`CLAUDE.md`**: léelo antes de tocar nada.
 
 El backend Go + SQLite (`main.go`, `internal/`, `db/`, `deploy/`, `Makefile`) es **legado**: sigue
-en producción (`https://toka.nuxapower.cl`) hasta migrar los datos y retirarlo. No se le añaden
+en el repo hasta migrar los datos y retirarlo. No se le añaden
 features. Las skills `/migration`, `/endpoint`, `/smoke` y `/schema` aplican solo a él.
 
 ## Comandos
@@ -14,7 +14,7 @@ features. Las skills `/migration`, `/endpoint`, `/smoke` y `/schema` aplican sol
 scripts/test-rules.sh                        # prueba firestore.rules (emulador propio)
 scripts/dev.sh                               # emuladores Firebase + emulador Android + "Toka DEV"
 scripts/dev.sh --parar                       # detiene los emuladores de Toka
-scripts/publicar-reglas.sh                   # publica reglas en toka-hogar-037f (solo si se pide)
+scripts/publicar-reglas.sh                   # publica reglas en tu proyecto Firebase (solo si se pide)
 cd android && ./gradlew compileDebugKotlin   # verificación rápida
 cd android && ./gradlew assembleDebug
 ```

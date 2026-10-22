@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 # Publica firestore.rules en el proyecto Firebase de Toka (sin firebase CLI, vía API de Rules).
-# Variables: FIREBASE_PROJECT (default toka-hogar-037f), GCLOUD_ACCOUNT (default alonso@tucunar.com).
+# Variables: FIREBASE_PROJECT (obligatoria), GCLOUD_ACCOUNT (default: cuenta activa de gcloud).
 set -euo pipefail
-P="${FIREBASE_PROJECT:-toka-hogar-037f}"
-CUENTA="${GCLOUD_ACCOUNT:-alonso@tucunar.com}"
+P="${FIREBASE_PROJECT:?export FIREBASE_PROJECT before running}"
+CUENTA="${GCLOUD_ACCOUNT:-$(gcloud config get-value account 2>/dev/null)}"
 cd "$(dirname "$0")/.."
 T=$(gcloud auth print-access-token --account="$CUENTA")
 API="https://firebaserules.googleapis.com/v1/projects/${P}"

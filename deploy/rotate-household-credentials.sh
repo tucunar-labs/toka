@@ -81,6 +81,6 @@ echo "  token nuevo de la persona $PERSON : $token"
 echo "  invite code nuevo del hogar $HOUSE : $invite"
 echo
 echo "Comprueba que el token viejo ya no entra:"
-echo "  curl -s -o /dev/null -w '%{http_code}\n' -H 'Authorization: Bearer buvea-alonso-token-2026' https://toka.nuxapower.cl/me   # esperado: 401"
+echo "  curl -s -o /dev/null -w '%{http_code}\\n' -H 'Authorization: Bearer <token viejo>' https://<tu-host>/me   # esperado: 401"
 echo "y que el nuevo sí:"
-echo "  curl -s -H \"Authorization: Bearer <token nuevo>\" https://toka.nuxapower.cl/me"
+echo "  curl -s -H \"Authorization: Bearer <token nuevo>\" https://<tu-host>/me"
