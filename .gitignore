@@ -41,3 +41,7 @@ android/app/src/release/google-services.json
 firebase-debug.log
 firestore-debug.log
 ui-debug.log
+
+# Python (scripts de reglas y siembra)
+__pycache__/
+*.pyc
