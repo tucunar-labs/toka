@@ -51,8 +51,8 @@ arquitectura:
 - [ ] Descargar `google-services.json` y dejarlo en
       `android/app/google-services.json` (gitignoreado); para CI, en base64 como
       secret `GOOGLE_SERVICES_JSON_BASE64`.
-- [ ] Publicar las reglas con `scripts/publicar-reglas.sh` cada vez que cambie
-      `firestore.rules`.
+- [ ] Publicar las reglas con `FIREBASE_PROJECT=<tu-proyecto> scripts/publicar-reglas.sh`
+      cada vez que cambie `firestore.rules`.
 
 ## Releases e instalación con Obtainium
 
@@ -84,7 +84,7 @@ El mismo APK firmado también se puede publicar en un repo F-Droid propio:
 
 ```bash
 cd android && ./gradlew assembleRelease -PtokaVersionName=0.3.0 -PtokaVersionCode=300   # versión del tag, no la de desarrollo
-scripts/publicar-apk.sh                                                                    # publica en el repo F-Droid configurado
+F_DROID_REPO=/ruta/al/repo-fdroid scripts/publicar-apk.sh                                # publica en tu repo F-Droid
 ```
 
 Los dos canales (Obtainium y F-Droid) deben servir **el mismo APK** (misma firma y mismo `versionCode`) para que
